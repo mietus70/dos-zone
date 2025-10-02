@@ -4,6 +4,9 @@ body {
   color: #0f0;
   text-align: center;
   padding: 20px;
+  background-image: url('/img/background.png');
+  background-size: cover;
+  margin: 0;
 }
 #dosbox {
   border: 3px solid #0f0;
@@ -50,6 +53,8 @@ button:hover {
   display: inline-block;
   width: 100%;
   cursor: none;
+  /* background-image: url('/img/background.png'); */
+  /* background-size: cover; */
 }
 
 .monitor-effect {
