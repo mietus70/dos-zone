@@ -2,7 +2,7 @@ let dosInstance = null;
 // Przygotuj dźwięk kliknięcia. Jeśli plik 'old-old-computer.mp3' nie istnieje, użyj dostępnego 'old-computer-click.mp3'.
 let clickSound = null;
 function initClickSound() {
-  const preferPath = '/sfx/old-old-computer.mp3';
+  const preferPath = '/sfx/old-computer-click.mp3';
   const fallbackPath = '/sfx/old-computer-click.mp3';
   // Spróbuj załadować preferowany plik; jeśli wystąpi błąd, ustaw fallback.
   clickSound = new Audio(preferPath);
