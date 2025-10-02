@@ -16,8 +16,8 @@
     <h1>Emulator MS-DOS (JS-DOS 6.22)</h1>
     <p>Wybierz grę lub program do uruchomienia:</p>
     <div id="button-container">
-      <button type="button" data-zip="exe/ami.zip">Ami</button>
-      <button type="button" data-zip="exe/pong.zip">Pong</button>
+      <button type="button" data-zip="exe/ami.zip" data-images="ami1.jpeg">Ami</button>
+      <button type="button" data-zip="exe/pong.zip" data-images="pong1.jpeg,pong2.jpeg">Pong</button>
     </div>
     <div id="controls-container">
       <button id="power-btn" type="button"><i class="icon-power-btn"></i></button>
@@ -29,6 +29,11 @@
           <canvas id="dosbox"></canvas>
         </div>
       </div>
+    </div>
+
+    <!-- Tooltip preview container -->
+    <div id="tooltip-preview" aria-hidden="true">
+      <div class="images"></div>
     </div>
 
     <!-- Załadowanie skryptu do obsługi emulatora -->
