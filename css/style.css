@@ -50,6 +50,69 @@ button:hover {
   width: 100%;
   cursor: none;
 }
+
+.monitor-effect {
+  position: relative;
+  background: #000;
+  border-radius: 20px;
+  padding: 20px;
+  max-width: 720px;
+  margin: 0 auto;
+  border: 2px solid #333333;
+  box-shadow: 0 0 20px rgba(0, 255, 0, 0.2),
+              inset 0 0 20px rgba(0, 0, 0, 0.8);
+}
+
+.screen {
+  position: relative;
+  overflow: hidden;
+  background: #000;
+}
+
+.scanline {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, 0) 50%,
+    rgba(0, 0, 0, 0.3) 50%
+  );
+  background-size: 100% 4px;
+  pointer-events: none;
+  z-index: 10;
+}
+
+.screen::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: radial-gradient(
+    circle at center,
+    transparent 0%,
+    rgba(0, 0, 0, 0.3) 100%
+  );
+  pointer-events: none;
+  z-index: 2;
+}
+
+.screen::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  box-shadow: inset 0 0 50px rgba(0, 255, 0, 0.1);
+  pointer-events: none;
+  z-index: 1;
+}
+
 canvas {
   image-rendering: pixelated;
   image-rendering: crisp-edges;
@@ -57,13 +120,12 @@ canvas {
   /* height: 400px; */
   max-width: 100%;
   height: auto;
-  border: 3px solid #0f0;
-  box-shadow: 0 0 10px #0f0;
   display: block;
   margin-left: auto;
   margin-right: auto;
-  margin-top: 20px;
   background: black;
   display: none; /* Ukryj canvas na początku */
   cursor: none;
+  position: relative;
+  z-index: 1;
 }

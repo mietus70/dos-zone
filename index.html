@@ -20,7 +20,12 @@
       <button type="button" data-zip="exe/pong.zip">Pong</button>
     </div>
     <div id="emulator-container">
-      <canvas id="dosbox"></canvas>
+      <div class="monitor-effect">
+        <div class="screen">
+          <div class="scanline"></div>
+          <canvas id="dosbox"></canvas>
+        </div>
+      </div>
     </div>
 
     <!-- Załadowanie skryptu do obsługi emulatora -->
