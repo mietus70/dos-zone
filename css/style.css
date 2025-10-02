@@ -28,8 +28,8 @@ body {
 }
 
 #tooltip-preview img {
-  width: 160px;
-  height: 100px;
+  width: 50vh;
+  height: 34vh;
   object-fit: cover;
   image-rendering: pixelated;
   border: 1px solid #0f0;
