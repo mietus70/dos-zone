@@ -1,4 +1,18 @@
 let dosInstance = null;
+// Przygotuj dźwięk kliknięcia. Jeśli plik 'old-old-computer.mp3' nie istnieje, użyj dostępnego 'old-computer-click.mp3'.
+let clickSound = null;
+function initClickSound() {
+  const preferPath = '/sfx/old-old-computer.mp3';
+  const fallbackPath = '/sfx/old-computer-click.mp3';
+  // Spróbuj załadować preferowany plik; jeśli wystąpi błąd, ustaw fallback.
+  clickSound = new Audio(preferPath);
+  clickSound.preload = 'auto';
+  clickSound.addEventListener('error', function () {
+    // Zamień na fallback
+    clickSound = new Audio(fallbackPath);
+    clickSound.preload = 'auto';
+  });
+}
 
 function runDos(zipFile) {
   // Zatrzymaj poprzednią instancję, jeśli istnieje
@@ -51,6 +65,15 @@ function initializeButtons() {
   const buttons = document.querySelectorAll("button[data-zip]");
   buttons.forEach((button) => {
     button.addEventListener("click", function () {
+      // Odtwórz dźwięk kliknięcia
+      try {
+        if (clickSound) {
+          clickSound.currentTime = 0;
+          clickSound.play().catch(() => {});
+        }
+      } catch (e) {
+        // ignoruj błędy odtwarzania (np. autostart zablokowany)
+      }
       const zipFile = this.getAttribute("data-zip")
       const emulatorContainer = document.getElementById("emulator-container");
       const monitor = document.querySelector(".monitor-effect");
@@ -86,5 +109,18 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 document.getElementById("power-btn").addEventListener("click", function() {
+     try {
+       if (clickSound) {
+         clickSound.currentTime = 0;
+         clickSound.play().catch(() => {});
+       }
+     } catch (e) {}
+     setTimeout(() => {
      window.location.reload();
+   }, 200);
+});
+
+// Inicjalizacja dźwięku po załadowaniu DOM
+document.addEventListener('DOMContentLoaded', function() {
+  initClickSound();
 });
