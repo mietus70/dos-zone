@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="pl">
+  <head>
+    <meta charset="UTF-8" >
+    <title>Emulator MS-DOS (JS-DOS 6.22)</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" >
+    <!-- Załadowanie głównego skryptu JS-DOS -->
+    <script src="https://js-dos.com/6.22/current/js-dos.js"></script>
+    <link rel="stylesheet" href="css/style.css" >
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
+    <meta name="description" content="Emulator MS-DOS (JS-DOS 6.22)">
+    <meta name="author" content="DOSzone">
+  </head>
+  <body>
+    <img src="img/logo.svg" id="logo" alt="DOSzone — retro gry i programy MS-DOS" width="720" height="162">
+    <h1>Emulator MS-DOS (JS-DOS 6.22)</h1>
+    <p>Wybierz grę lub program do uruchomienia:</p>
+    <div>
+      <button type="button" data-zip="exe/ami.zip">Ami</button>
+      <button type="button" data-zip="exe/pong.zip">Pong</button>
+    </div>
+    <div id="emulator-container">
+      <canvas id="dosbox"></canvas>
+    </div>
+
+    <!-- Załadowanie skryptu do obsługi emulatora -->
+    <script src="js/script.js"></script>
+  </body>
+</html>

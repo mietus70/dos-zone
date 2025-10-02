@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="800" height="180" viewBox="0 0 800 180" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc">
+  <title id="title">Logo retro MS-DOS</title>
+  <desc id="desc">Terminalowy zielony napis w ramce z delikatną poświatą.</desc>
+
+  <defs>
+    <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur in="SourceGraphic" stdDeviation="2.2" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+
+    <pattern id="scan" width="4" height="4" patternUnits="userSpaceOnUse">
+      <rect y="0" width="4" height="1" fill="#0f0" opacity="0.07"/>
+    </pattern>
+
+    <style>
+      text { fill: #0f0; }
+      #cursor { animation: blink 1s steps(1,end) infinite; }
+      @keyframes blink { 50% { opacity: 0; } }
+    </style>
+  </defs>
+
+  <rect x="6" y="6" width="788" height="168" rx="10" ry="10" fill="none" stroke="#0f0" stroke-width="3" filter="url(#glow)"/>
+
+  <g filter="url(#glow)">
+    <text x="32" y="105" font-family="ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace" font-size="56" letter-spacing="1">
+      <tspan>C:\&gt; </tspan>
+      <tspan id="brand">DOSzone</tspan>
+      <tspan id="cursor"> █</tspan>
+    </text>
+  </g>
+
+  <rect x="6" y="6" width="788" height="168" fill="url(#scan)" opacity="0.12" pointer-events="none"/>
+</svg>

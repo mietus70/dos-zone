@@ -1,0 +1,69 @@
+body {
+  font-family: monospace;
+  background: #111;
+  color: #0f0;
+  text-align: center;
+  padding: 20px;
+}
+#dosbox {
+  border: 3px solid #0f0;
+  margin-top: 20px;
+  width: 640px;
+  height: 400px;
+  display: block; /* Upewnij się, że canvas jest blokowym elementem */
+  margin-left: auto;
+  margin-right: auto;
+  box-shadow: 0 0 10px #0f0;
+}
+#logo {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  margin-bottom: 20px;
+  max-width: 100%;
+  height: auto;
+}
+button {
+  margin: 5px;
+  padding: 10px 20px;
+  font-size: 14px;
+  background: black;
+  color: lime;
+  border: 1px solid #0f0;
+  cursor: pointer;
+}
+button:hover {
+  background: #030;
+}
+#button-container,
+#screenshot-container {
+  display: flex;
+  text-align: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+#emulator-container {
+  position: relative;
+  display: inline-block;
+  width: 100%;
+  cursor: none;
+}
+canvas {
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+  /* width: 640px; */ 
+  /* height: 400px; */
+  max-width: 100%;
+  height: auto;
+  border: 3px solid #0f0;
+  box-shadow: 0 0 10px #0f0;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  margin-top: 20px;
+  background: black;
+  display: none; /* Ukryj canvas na początku */
+  cursor: none;
+}
