@@ -4,7 +4,7 @@ body {
   color: #0f0;
   text-align: center;
   padding: 20px;
-  background-image: url('/img/background.png');
+  background-image: url("/img/background.png");
   background-size: cover;
   margin: 0;
 }
@@ -39,8 +39,7 @@ button {
 button:hover {
   background: #030;
 }
-#button-container,
-#screenshot-container {
+#button-container {
   display: flex;
   text-align: center;
   justify-content: center;
@@ -48,13 +47,36 @@ button:hover {
   gap: 10px;
   margin-bottom: 20px;
 }
+#power-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center; /* Wyśrodkowanie ikony, jeśli nie ma tekstu */
+  padding: 10px;
+  border-radius: 5px;
+  cursor: pointer;
+  width: 40px; /* Przykładowe wymiary przycisku */
+  height: 40px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  visibility: hidden;
+}
+.icon-power-btn {
+  display: inline-block;
+  width: 24px;
+  height: 24px;
+  background-image: url("/img/power-btn.svg"); /* Ścieżka do ikony */
+  background-repeat: no-repeat;
+  background-size: contain;
+  background-position: center;
+  filter: invert(20%) sepia(100%) saturate(500%) hue-rotate(100deg)
+    brightness(80%) contrast(200%);
+}
+
 #emulator-container {
   position: relative;
   display: inline-block;
   width: 100%;
   cursor: none;
-  /* background-image: url('/img/background.png'); */
-  /* background-size: cover; */
+  visibility: collapse;
 }
 
 .monitor-effect {
@@ -65,8 +87,7 @@ button:hover {
   max-width: 720px;
   margin: 0 auto;
   border: 2px solid #333333;
-  box-shadow: 0 0 20px rgba(0, 255, 0, 0.2),
-              inset 0 0 20px rgba(0, 0, 0, 0.8);
+  box-shadow: 0 0 20px rgba(0, 255, 0, 0.2), inset 0 0 20px rgba(0, 0, 0, 0.8);
 }
 
 .screen {
@@ -92,7 +113,7 @@ button:hover {
 }
 
 .screen::before {
-  content: '';
+  content: "";
   position: absolute;
   top: 0;
   left: 0;
@@ -108,7 +129,7 @@ button:hover {
 }
 
 .screen::after {
-  content: '';
+  content: "";
   position: absolute;
   top: 0;
   left: 0;
@@ -122,7 +143,7 @@ button:hover {
 canvas {
   image-rendering: pixelated;
   image-rendering: crisp-edges;
-  /* width: 640px; */ 
+  /* width: 640px; */
   /* height: 400px; */
   max-width: 100%;
   height: auto;

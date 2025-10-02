@@ -51,7 +51,10 @@ function initializeButtons() {
   const buttons = document.querySelectorAll("button[data-zip]");
   buttons.forEach((button) => {
     button.addEventListener("click", function () {
-      const zipFile = this.getAttribute("data-zip");
+      const zipFile = this.getAttribute("data-zip")
+      document.getElementById("emulator-container").style.visibility = "visible"; 
+      document.getElementById("power-btn").style.visibility = "visible";
+      document.getElementById("button-container").style.display = "none";
       runDos(zipFile);
     });
   });
@@ -69,4 +72,8 @@ document.addEventListener("DOMContentLoaded", function () {
   }
   // Jeśli Dos jest dostępny, inicjalizujemy przyciski
   initializeButtons();
+});
+
+document.getElementById("power-btn").addEventListener("click", function() {
+     window.location.reload();
 });
