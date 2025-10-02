@@ -22,6 +22,7 @@ body {
   margin-bottom: 20px;
   max-width: 100%;
   height: auto;
+  width: 640px;
 }
 button {
   margin: 5px;
