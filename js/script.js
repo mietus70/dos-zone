@@ -52,10 +52,21 @@ function initializeButtons() {
   buttons.forEach((button) => {
     button.addEventListener("click", function () {
       const zipFile = this.getAttribute("data-zip")
-      document.getElementById("emulator-container").style.visibility = "visible"; 
-      document.getElementById("power-btn").style.visibility = "visible";
+      const emulatorContainer = document.getElementById("emulator-container");
+      const monitor = document.querySelector(".monitor-effect");
+      const canvas = document.getElementById("dosbox");
       document.getElementById("button-container").style.display = "none";
-      runDos(zipFile);
+      document.getElementById("controls-container").style.display = "inline-flex";
+      // Pokaż kontener (usuń visibility: collapse) i uruchom animację
+      emulatorContainer.style.visibility = "visible";
+      // Small timeout to allow CSS transition to animate
+      setTimeout(() => {
+        monitor.classList.add("active");
+        // Ensure canvas is displayed (CSS transition will animate opacity/transform)
+        canvas.style.display = "block";
+        // Daj krótkie opóźnienie aby animacja rozpoczęła się przed ładowaniem gry
+        setTimeout(() => runDos(zipFile), 120);
+      }, 15);
     });
   });
 }

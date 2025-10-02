@@ -39,7 +39,7 @@ button {
 button:hover {
   background: #030;
 }
-#button-container {
+#button-container, #controls-container {
   display: flex;
   text-align: center;
   justify-content: center;
@@ -47,28 +47,29 @@ button:hover {
   gap: 10px;
   margin-bottom: 20px;
 }
+
+#controls-container {
+  display: none;
+}
+
 #power-btn {
-  display: inline-flex;
   align-items: center;
-  justify-content: center; /* Wyśrodkowanie ikony, jeśli nie ma tekstu */
+  justify-content: center;
   padding: 10px;
   border-radius: 5px;
   cursor: pointer;
-  width: 40px; /* Przykładowe wymiary przycisku */
-  height: 40px;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-  visibility: hidden;
 }
 .icon-power-btn {
   display: inline-block;
-  width: 24px;
-  height: 24px;
-  background-image: url("/img/power-btn.svg"); /* Ścieżka do ikony */
+  width: 1rem;
+  height: 1rem;
+  background-image: url("/img/power-btn.svg");
   background-repeat: no-repeat;
   background-size: contain;
   background-position: center;
   filter: invert(20%) sepia(100%) saturate(500%) hue-rotate(100deg)
-    brightness(80%) contrast(200%);
+    brightness(100%) contrast(200%);
 }
 
 #emulator-container {
@@ -88,6 +89,31 @@ button:hover {
   margin: 0 auto;
   border: 2px solid #333333;
   box-shadow: 0 0 20px rgba(0, 255, 0, 0.2), inset 0 0 20px rgba(0, 0, 0, 0.8);
+}
+
+/* Animacja pojawiania monitora */
+.monitor-effect {
+  transform: scale(0.4);
+  opacity: 0;
+  transition: opacity 820ms ease-out, transform 820ms cubic-bezier(.2,.9,.2,1);
+}
+
+.monitor-effect.active {
+  transform: scale(1);
+  opacity: 1;
+}
+
+/* Animacja pojawiania canvasa wewnątrz ekranu */
+.screen canvas {
+  transform: translateY(8px) scale(0.98);
+  opacity: 0;
+  transition: opacity 820ms ease-out, transform 820ms cubic-bezier(.2,.9,.2,1);
+}
+
+.monitor-effect.active .screen canvas {
+  transform: translateY(0) scale(1);
+  opacity: 1;
+  display: block; /* zapewni, że canvas będzie widoczny po animacji */
 }
 
 .screen {
