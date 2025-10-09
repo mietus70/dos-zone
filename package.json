@@ -1,0 +1,26 @@
+{
+  "name": "dos-zone",
+  "version": "1.0.0",
+  "description": "--- layout: default title: \"DOS Zone\" description: \"Minimalistic website with jdosbox and small dos projects built with HTML, CSS and vanilla JavaScript.\" ---",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "parcel index.html --open",
+    "build": "parcel build index.html --public-url ./",
+    "dev": "parcel index.html",
+    "serve": "parcel serve index.html --port 1234"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mietus70/dos-zone.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/mietus70/dos-zone/issues"
+  },
+  "homepage": "https://github.com/mietus70/pwd-generator#readme",
+  "devDependencies": {
+    "parcel": "^2.16.0"
+  }
+}
