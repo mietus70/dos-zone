@@ -56,6 +56,113 @@ async function diagnosticReport() {
   return lines;
 }
 
+// ===== Mostowanie dotyku na mysz (canvas emulatora) =====
+// Maszyna WASM (wdosbox) traktuje RZECZYWISTY dotyk (zdarzenie SDL touch z
+// prawdziwym deviceID) jako PRAWY przycisk myszy — dlatego przeciągnięcie
+// palcem "łapało" okna w Workbenchu. Myszka desktopowa ma inne zachowanie:
+// jej zdarzenia touch są syntetyczne (deviceID -1) i maszyn je ignoruje.
+// Rozwiązanie: blokujemy dotyk przed dojściem do maszyny (nasz listener
+// rejestrujemy PRZED jej listenerami, więc stopImmediatePropagation je
+// zatrzymuje) i wyemitowujemy zwyczajne MouseEvent'y — dotyk zachowuje się
+// wtedy identycznie jak myszka na komputerze.
+// Długi dotyk (~0,5 s bez ruchu) = prawy przycisk: można świadomie
+// przesunąć okno, ale zwykły ruch palcem już nic nie łapie.
+function installTouchMouseBridge(canvas) {
+  if (canvas.__touchMouseBridge) return;
+  canvas.__touchMouseBridge = true;
+
+  const LONG_PRESS_MS = 480;
+  const MOVE_SLOP_PX = 12;
+
+  let fingerId = null;        // śledzony palec (zawsze pierwszy)
+  let startX = 0, startY = 0;
+  let state = "idle";         // idle | left | right
+  let timer = null;
+
+  function vibrate(ms) {
+    try { if (navigator.vibrate) navigator.vibrate(ms); } catch (e) { /* ignore */ }
+  }
+
+  // Syntetyczne zdarzenie myszy. Warstwa SDL w wdosbox.js czyta event.pageX /
+  // event.pageY, których NIE MA w konstruktorze MouseEvent — doklejamy je
+  // jako zwykłe własności (zaciensiają gettery prototypu).
+  function dispatchMouse(type, button, clientX, clientY) {
+    const me = new MouseEvent(type, {
+      bubbles: true,
+      cancelable: true,
+      view: window,
+      button: button,
+      buttons: button === 2 ? 2 : 1,
+      clientX: clientX,
+      clientY: clientY,
+    });
+    me.pageX = clientX + (window.scrollX || 0);
+    me.pageY = clientY + (window.scrollY || 0);
+    canvas.dispatchEvent(me);
+  }
+
+  function clearTimer() {
+    if (timer) { clearTimeout(timer); timer = null; }
+  }
+
+  canvas.addEventListener("touchstart", function (e) {
+    // ZAWSZE blokujemy raw touch — maszynka ma go w ogóle nie widzieć
+    // (to on wywołuje w niej "prawy przycisk" przy Amiga).
+    e.preventDefault();             // bez syntezy myszki przez przeglądarkę
+    e.stopImmediatePropagation();   // maszynka i ewentualny swipe to nie widzą
+    if (fingerId !== null) return;  // kolejne palce ignorujemy (bez pincha)
+    const t = e.changedTouches[0];
+    if (!t) return;
+    fingerId = t.identifier;
+    startX = t.clientX;
+    startY = t.clientY;
+    state = "left";
+    dispatchMouse("mousedown", 0, t.clientX, t.clientY);
+    timer = setTimeout(function () {
+      timer = null;
+      if (state !== "left") return;
+      state = "right";
+      vibrate(15);
+      dispatchMouse("mouseup", 0, startX, startY);
+      dispatchMouse("mousedown", 2, startX, startY);
+    }, LONG_PRESS_MS);
+  }, true);
+
+  canvas.addEventListener("touchmove", function (e) {
+    e.preventDefault();
+    e.stopImmediatePropagation();   // każdy raw touch na canvasie blokuje
+    if (fingerId === null) return;
+    let t = null;
+    for (let i = 0; i < e.changedTouches.length; i++) {
+      if (e.changedTouches[i].identifier === fingerId) { t = e.changedTouches[i]; break; }
+    }
+    if (!t) return;
+    if (state === "left" && timer) {
+      const dx = t.clientX - startX, dy = t.clientY - startY;
+      if (dx * dx + dy * dy > MOVE_SLOP_PX * MOVE_SLOP_PX) clearTimer();
+    }
+    dispatchMouse("mousemove", state === "right" ? 2 : 0, t.clientX, t.clientY);
+  }, true);
+
+  function endTouch(e) {
+    e.preventDefault();
+    e.stopImmediatePropagation();
+    if (fingerId === null) return;
+    let t = null;
+    for (let i = 0; i < e.changedTouches.length; i++) {
+      if (e.changedTouches[i].identifier === fingerId) { t = e.changedTouches[i]; break; }
+    }
+    if (!t) return; // odszedł inny palec
+    clearTimer();
+    dispatchMouse("mouseup", state === "right" ? 2 : 0, t.clientX, t.clientY);
+    fingerId = null;
+    state = "idle";
+  }
+
+  canvas.addEventListener("touchend", endTouch, true);
+  canvas.addEventListener("touchcancel", endTouch, true);
+}
+
 async function runDos(zipFile) {
   // Zatrzymaj poprzednią instancję, jeśli istnieje
   if (dosInstance) {
@@ -76,6 +183,11 @@ async function runDos(zipFile) {
       (probe.ct ? ", " + probe.ct : "") + ") — używam rezerwowego CDN " + ENGINE_CDN_BASE);
   }
   const wdosboxUrl = useCdn ? ENGINE_CDN_BASE + "wdosbox.js" : ENGINE_LOCAL_JS;
+
+  // Most dotyk→mysz: rejestrujemy NAJPIERW, bo kolejność listenerów na
+  // canvasie decyduje o tym, czy stopImmediatePropagation zablokuje
+  // obsłudę dotyku w maszynie (wdosbox), czy odwrotnie.
+  installTouchMouseBridge(document.getElementById("dosbox"));
 
   // Inicjalizacja JS-DOS z wdosbox.js
   // Używamy `wdosboxUrl` do wskazania lokalizacji pliku wdosbox.js
