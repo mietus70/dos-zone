@@ -14,8 +14,12 @@ function initClickSound() {
 }
 
 // Ścieżki silnika: lokalna (pierwszy wybór) i rezerwowy CDN z przypiętą wersją
-const ENGINE_LOCAL_JS = "js/wdosbox.js";
-const ENGINE_LOCAL_WASM = "js/wdosbox.wasm.js";
+// ENGINE_VERSION = cache-buster: po zmianie plików silnika podnieś numer,
+// żeby przeglądarka nie wracała do starego, zbuforowanego pliku
+// (np. z okresu, gdy serwer zwracał dla tego adresu stronę HTML).
+const ENGINE_VERSION = "v1";
+const ENGINE_LOCAL_JS = "js/wdosbox.js?" + ENGINE_VERSION;
+const ENGINE_LOCAL_WASM = "js/wdosbox.wasm.js?" + ENGINE_VERSION;
 const ENGINE_CDN_BASE = "https://cdn.jsdelivr.net/npm/js-dos@6.22.60/dist/";
 // Rezerwowe źródło plików gry (zip, sfx, obrazy): repo na GitHubie (gałąź main).
 // Wszystkie te pliki istnieją tam od pierwszego commitu — jeśli hosting
