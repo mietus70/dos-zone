@@ -65,6 +65,15 @@ body {
   height: auto;
   width: 640px;
 }
+
+/* Krótki opis strony pod nagłówkiem */
+.site-description {
+  max-width: 640px;
+  margin: 0 auto 12px;
+  font-size: 14px;
+  line-height: 1.5;
+  color: #0c0;
+}
 button {
   margin: 5px;
   padding: 10px 20px;
