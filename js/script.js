@@ -20,7 +20,9 @@ function runDos(zipFile) {
   // Inicjalizacja JS-DOS z wdosbox.js
   // Używamy `wdosboxUrl` do wskazania lokalizacji pliku wdosbox.js
   Dos(document.getElementById("dosbox"), {
-    // Lokalna kopia silnika JS-DOS 6.22.60 (wdosbox.js + wdosbox.wasm.js w folderze js/)
+    // Lokalna kopia silnika JS-DOS 6.22.60 (wdosbox.js + wdosbox.wasm.js w folderze js/).
+    // Pliki są pobierane w trakcie pracy — npm run build kopiuje je do dist/
+    // (scripts/copy-dist.mjs), a do dev służy zwykły serwer statyczny (server.js).
     // Dzięki temu strona nie zależy od CDN js-dos.com.
     wdosboxUrl: "js/wdosbox.js",
   })
@@ -47,7 +49,9 @@ function runDos(zipFile) {
       // Obsługa błędów podczas inicjalizacji Dos
       console.error("Błąd inicjalizacji JS-DOS:", error);
       alert(
-        "Nie udało się zainicjalizować emulatora. Sprawdź połączenie internetowe lub ścieżkę do wdosbox.js."
+        "Nie udało się zainicjalizować emulatora. " +
+        "Sprawdź, czy serwer podaje pliki js/wdosbox.js i js/wdosbox.wasm.js " +
+        "(błąd magic word/WebAssembly zwykle oznacza, że zwrócił HTML zamiast binarnego pliku wasm)."
       );
     });
 }

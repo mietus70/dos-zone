@@ -4,10 +4,10 @@
   "description": "--- layout: default title: \"DOS Zone\" description: \"Minimalistic website with jdosbox and small dos projects built with HTML, CSS and vanilla JavaScript.\" ---",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "parcel index.html --open",
-    "build": "parcel build index.html --public-url ./",
-    "dev": "parcel index.html",
-    "serve": "parcel serve index.html --port 1234"
+    "start": "node server.js",
+    "dev": "node server.js",
+    "serve": "node server.js --port 1234",
+    "build": "node scripts/clean-dist.mjs && parcel build index.html --public-url ./ && node scripts/copy-dist.mjs"
   },
   "repository": {
     "type": "git",
