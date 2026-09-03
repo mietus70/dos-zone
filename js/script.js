@@ -6,7 +6,42 @@ function initClickSound() {
   clickSound.preload = 'auto';
 }
 
-function runDos(zipFile) {
+// Ścieżki silnika: lokalna (pierwszy wybór) i rezerwowy CDN z przypiętą wersją
+const ENGINE_LOCAL_JS = "js/wdosbox.js";
+const ENGINE_LOCAL_WASM = "js/wdosbox.wasm.js";
+const ENGINE_CDN_BASE = "https://cdn.jsdelivr.net/npm/js-dos@6.22.60/dist/";
+
+// Tani test dostępności pliku (HEAD; serwer zwracający 405 dostaje GET z Range).
+// Ważne: rozpoznajemy "soft 404" — serwery (np. parcel) zwracają status 200
+// z HTML (index.html) dla brakujących plików; dla WebAssembly to śmiertelne.
+async function probeFile(url) {
+  try {
+    let r = await fetch(url, { method: "HEAD" });
+    if (r.status === 405) {
+      const g = await fetch(url, { headers: { Range: "bytes=0-3" } });
+      try { if (g.body) await g.body.cancel(); } catch (e) { /* ignore */ }
+      r = g;
+    }
+    const ct = (r.headers.get("Content-Type") || "").toLowerCase();
+    return { ok: r.ok && !ct.startsWith("text/html"), status: r.status, ct: ct };
+  } catch (e) {
+    return { ok: false, status: "błąd sieci", ct: "" };
+  }
+}
+
+// Lista plików potrzebnych do działania strony (do diagnostyki przy błędzie)
+const REQUIRED_FILES = ["js/wdosbox.js", "js/wdosbox.wasm.js", "exe/ami.zip", "exe/pong.zip", "sfx/old-computer-click.mp3"];
+
+async function diagnosticReport() {
+  let lines = "Stan plików na serwerze:\n";
+  for (const f of REQUIRED_FILES) {
+    const p = await probeFile(f);
+    lines += "  " + f + ": " + (p.ok ? "OK" : "BRAK (HTTP " + p.status + (p.ct ? ", " + p.ct : "") + ")") + "\n";
+  }
+  return lines;
+}
+
+async function runDos(zipFile) {
   // Zatrzymaj poprzednią instancję, jeśli istnieje
   if (dosInstance) {
     dosInstance.stop();
@@ -17,14 +52,23 @@ function runDos(zipFile) {
     ctx.fillRect(0, 0, canvas.width, canvas.height);
   }
 
+  // Sprawdź, czy serwer faktycznie podaje binarny plik silnika; jeśli nie —
+  // automatycznie użyj rezerwowego CDN (js-dos 6.22.60 z jsDelivr).
+  const probe = await probeFile(ENGINE_LOCAL_WASM);
+  const useCdn = !probe.ok;
+  if (useCdn) {
+    console.warn("Silnik JS-DOS nie jest dostępny na serwerze (HTTP " + probe.status +
+      (probe.ct ? ", " + probe.ct : "") + ") — używam rezerwowego CDN " + ENGINE_CDN_BASE);
+  }
+  const wdosboxUrl = useCdn ? ENGINE_CDN_BASE + "wdosbox.js" : ENGINE_LOCAL_JS;
+
   // Inicjalizacja JS-DOS z wdosbox.js
   // Używamy `wdosboxUrl` do wskazania lokalizacji pliku wdosbox.js
   Dos(document.getElementById("dosbox"), {
-    // Lokalna kopia silnika JS-DOS 6.22.60 (wdosbox.js + wdosbox.wasm.js w folderze js/).
-    // Pliki są pobierane w trakcie pracy — npm run build kopiuje je do dist/
-    // (scripts/copy-dist.mjs), a do dev służy zwykły serwer statyczny (server.js).
-    // Dzięki temu strona nie zależy od CDN js-dos.com.
-    wdosboxUrl: "js/wdosbox.js",
+    // Silnik JS-DOS 6.22.60: lokalny (js/wdosbox.js + js/wdosbox.wasm.js) lub
+    // rezerwowy CDN (jsDelivr, ta sama przypięta wersja). npm run build kopiuje
+    // pliki silnika do dist/ (scripts/copy-dist.mjs).
+    wdosboxUrl: wdosboxUrl,
   })
     .ready(function (fs, main) {
       // Zapisz instancję do późniejszego zatrzymania
@@ -42,16 +86,25 @@ function runDos(zipFile) {
             "Błąd podczas wyodrębniania lub uruchamiania pliku ZIP:",
             error
           );
-          alert("Nie udało się uruchomić programu. Sprawdź konsolę.");
+          alert(
+            "Nie udało się uruchomić programu z pliku ZIP.\n\n" +
+            zipFile + " może nie być wgrany na serwer — porównaj zawartość folderu dist/ " +
+            "z katalogiem na serwerze (musi być: exe/*.zip)."
+          );
         });
     })
-    .catch(function (error) {
-      // Obsługa błędów podczas inicjalizacji Dos
+    .catch(async function (error) {
+      // Obsługa błędów podczas inicjalizacji Dos — zbierz diagnostykę plików
       console.error("Błąd inicjalizacji JS-DOS:", error);
+      const report = await diagnosticReport();
       alert(
-        "Nie udało się zainicjalizować emulatora. " +
-        "Sprawdź, czy serwer podaje pliki js/wdosbox.js i js/wdosbox.wasm.js " +
-        "(błąd magic word/WebAssembly zwykle oznacza, że zwrócił HTML zamiast binarnego pliku wasm)."
+        "Nie udało się zainicjalizować emulatora.\n\n" +
+        report + "\n" +
+        (useCdn
+          ? "Silnik był pobierany z rezerwowego CDN — problem leży w plikach gry (exe/*.zip) na serwerze."
+          : "Wgraj na serwer pełną zawartość katalogu dist/ (po npm run build): " +
+            "js/wdosbox.js, js/wdosbox.wasm.js oraz exe/*.zip. " +
+            "Błąd magic word/WebAssembly oznacza, że serwer zwraca HTML zamiast binarki.")
       );
     });
 }
@@ -197,10 +250,22 @@ function initializeButtons() {
 document.addEventListener("DOMContentLoaded", function () {
   // Tutaj sprawdzamy, czy funkcja Dos jest już dostępna (po załadowaniu js-dos.js)
   if (typeof Dos === "undefined") {
-    console.error(
-      "Błąd krytyczny: Funkcja 'Dos' nie została załadowana z js-dos.js. Sprawdź ścieżkę i połączenie internetowe."
-    );
-    alert("Błąd ładowania głównego skryptu JS-DOS. Sprawdź konsolę.");
+    // Rezerwa: załaduj loader z przypiętego CDN (ta sama wersja 6.22.60),
+    // żeby strona działała nawet, gdyby js/js-dos.js nie dotarło na serwer.
+    console.warn("Dos niedostępne — ładuję js-dos.js z rezerwowego CDN");
+    const s = document.createElement("script");
+    s.src = ENGINE_CDN_BASE + "js-dos.js";
+    s.onload = function () {
+      if (typeof Dos !== "undefined") {
+        initializeButtons();
+      } else {
+        alert("Błąd ładowania głównego skryptu JS-DOS (lokalnego i z CDN). Sprawdź konsolę.");
+      }
+    };
+    s.onerror = function () {
+      alert("Błąd ładowania głównego skryptu JS-DOS. Sprawdź konsolę i połączenie internetowe.");
+    };
+    document.head.appendChild(s);
     return;
   }
   // Jeśli Dos jest dostępny, inicjalizujemy przyciski
