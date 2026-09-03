@@ -2,14 +2,25 @@ let dosInstance = null;
 // Przygotuj dźwięk kliknięcia. Ścieżka względna względem strony — działa też przy hostingu w podkatalogu.
 let clickSound = null;
 function initClickSound() {
-  clickSound = new Audio('sfx/old-computer-click.mp3');
+  const sfxFile = 'sfx/old-computer-click.mp3';
+  clickSound = new Audio(sfxFile);
   clickSound.preload = 'auto';
+  // Rezerwa: jeśli serwer nie poda pliku (np. HTTP 500), doładuj z GitHuba
+  clickSound.addEventListener('error', function () {
+    if (clickSound.src.indexOf(GITHUB_FALLBACK) !== 0) {
+      clickSound.src = GITHUB_FALLBACK + sfxFile;
+    }
+  });
 }
 
 // Ścieżki silnika: lokalna (pierwszy wybór) i rezerwowy CDN z przypiętą wersją
 const ENGINE_LOCAL_JS = "js/wdosbox.js";
 const ENGINE_LOCAL_WASM = "js/wdosbox.wasm.js";
 const ENGINE_CDN_BASE = "https://cdn.jsdelivr.net/npm/js-dos@6.22.60/dist/";
+// Rezerwowe źródło plików gry (zip, sfx, obrazy): repo na GitHubie (gałąź main).
+// Wszystkie te pliki istnieją tam od pierwszego commitu — jeśli hosting
+// nie podaje danego pliku (np. zwraca 500), ładowany jest z GitHuba.
+const GITHUB_FALLBACK = "https://raw.githubusercontent.com/mietus70/dos-zone/main/";
 
 // Tani test dostępności pliku (HEAD; serwer zwracający 405 dostaje GET z Range).
 // Ważne: rozpoznajemy "soft 404" — serwery (np. parcel) zwracają status 200
@@ -76,6 +87,11 @@ async function runDos(zipFile) {
 
       // Pobierz i rozpakuj plik ZIP
       fs.extract(zipFile)
+        .catch(function (error) {
+          // Serwer nie podał pliku gry (np. HTTP 500/404) — spróbuj rezerwowego GitHuba
+          console.warn("Nie udało się pobrać " + zipFile + " z serwera (" + error + ") — ładowanie z GitHuba");
+          return fs.extract(GITHUB_FALLBACK + zipFile);
+        })
         .then(function () {
           // Uruchom główny program z pliku ZIP (często autoexec.bat lub nazwa gry)
           // Możesz potrzebować dostosować ten parametr w zależności od zawartości ZIPa
@@ -87,9 +103,9 @@ async function runDos(zipFile) {
             error
           );
           alert(
-            "Nie udało się uruchomić programu z pliku ZIP.\n\n" +
-            zipFile + " może nie być wgrany na serwer — porównaj zawartość folderu dist/ " +
-            "z katalogiem na serwerze (musi być: exe/*.zip)."
+            "Nie udało się uruchomić programu.\n\n" +
+            "Plik " + zipFile + " nie jest dostępny ani na serwerze, ani na GitHubie.\n" +
+            "Szczegóły: " + error
           );
         });
     })
@@ -180,7 +196,14 @@ function initializeButtons() {
     const p = new Promise(resolve => {
       const img = new Image();
       img.onload = () => resolve({ ok: true, src });
-      img.onerror = () => resolve({ ok: false, src });
+      img.onerror = () => {
+        // Rezerwa: serwer nie podał obrazka — spróbuj GitHuba (onload/onerror wywoła się ponownie)
+        if (img.src.indexOf(GITHUB_FALLBACK) !== 0) {
+          img.src = GITHUB_FALLBACK + src;
+        } else {
+          resolve({ ok: false, src });
+        }
+      };
       img.src = src;
     });
     preloadCache.set(src, p);
