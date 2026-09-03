@@ -4,7 +4,7 @@ body {
   color: #0f0;
   text-align: center;
   padding: 20px;
-  background-image: url("/img/background.png");
+  background-image: url("../img/background.webp");
   background-size: cover;
   margin: 0;
 }
@@ -37,12 +37,24 @@ body {
 #dosbox {
   border: 3px solid #0f0;
   margin-top: 20px;
-  width: 640px;
-  height: 400px;
-  display: block; /* Upewnij się, że canvas jest blokowym elementem */
-  margin-left: auto;
-  margin-right: auto;
+  /* Responsywnie: skaluje się w dół na wąskich ekranach, max 640px;
+     wysokość wyniknie z proporcji atrybutów canvasa (height: auto) */
+  width: 100%;
+  max-width: 640px;
+  height: auto;
   box-shadow: 0 0 10px #0f0;
+  /* Dotyk (mobile): przeglądarka nie chwyta gestów (scroll/zoom/double-tap)
+     nad ekranem DOS — ruchy trafiają w całości do emulatora (przeciąganie okien w Ami) */
+  touch-action: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Blokada zaznaczania tekstu i przywoływanek długiego dotyku nad emulatorem */
+#emulator-container, #dosbox {
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -webkit-touch-callout: none;
 }
 #logo {
   display: block;
@@ -90,7 +102,7 @@ button:hover {
   display: inline-block;
   width: 1rem;
   height: 1rem;
-  background-image: url("/img/power-btn.svg");
+  background-image: url("../img/power-btn.svg");
   background-repeat: no-repeat;
   background-size: contain;
   background-position: center;
@@ -103,7 +115,7 @@ button:hover {
   display: inline-block;
   width: 100%;
   cursor: none;
-  visibility: collapse;
+  visibility: hidden;
 }
 
 .monitor-effect {
@@ -115,10 +127,7 @@ button:hover {
   margin: 0 auto;
   border: 2px solid #333333;
   box-shadow: 0 0 20px rgba(0, 255, 0, 0.2), inset 0 0 20px rgba(0, 0, 0, 0.8);
-}
-
-/* Animacja pojawiania monitora */
-.monitor-effect {
+  /* Animacja pojawiania monitora */
   transform: scale(0.4);
   opacity: 0;
   transition: opacity 820ms ease-out, transform 820ms cubic-bezier(.2,.9,.2,1);
@@ -195,15 +204,12 @@ button:hover {
 canvas {
   image-rendering: pixelated;
   image-rendering: crisp-edges;
-  /* width: 640px; */
-  /* height: 400px; */
   max-width: 100%;
   height: auto;
   display: block;
   margin-left: auto;
   margin-right: auto;
   background: black;
-  display: none; /* Ukryj canvas na początku */
   cursor: none;
   position: relative;
   z-index: 1;

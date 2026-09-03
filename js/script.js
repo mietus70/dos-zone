@@ -1,17 +1,9 @@
 let dosInstance = null;
-// Przygotuj dźwięk kliknięcia. Jeśli plik 'old-old-computer.mp3' nie istnieje, użyj dostępnego 'old-computer-click.mp3'.
+// Przygotuj dźwięk kliknięcia. Ścieżka względna względem strony — działa też przy hostingu w podkatalogu.
 let clickSound = null;
 function initClickSound() {
-  const preferPath = '/sfx/old-computer-click.mp3';
-  const fallbackPath = '/sfx/old-computer-click.mp3';
-  // Spróbuj załadować preferowany plik; jeśli wystąpi błąd, ustaw fallback.
-  clickSound = new Audio(preferPath);
+  clickSound = new Audio('sfx/old-computer-click.mp3');
   clickSound.preload = 'auto';
-  clickSound.addEventListener('error', function () {
-    // Zamień na fallback
-    clickSound = new Audio(fallbackPath);
-    clickSound.preload = 'auto';
-  });
 }
 
 function runDos(zipFile) {
@@ -28,9 +20,9 @@ function runDos(zipFile) {
   // Inicjalizacja JS-DOS z wdosbox.js
   // Używamy `wdosboxUrl` do wskazania lokalizacji pliku wdosbox.js
   Dos(document.getElementById("dosbox"), {
-    // Ta ścieżka zakłada, że pliki js-dos.js i wdosbox.js są w tym samym folderze co index.html
-    // Jeśli umieścisz je w podfolderze (np. 'js-dos'), zmień ścieżkę na np. "./js-dos/wdosbox.js"
-    wdosboxUrl: "https://js-dos.com/6.22/current/wdosbox.js",
+    // Lokalna kopia silnika JS-DOS 6.22.60 (wdosbox.js + wdosbox.wasm.js w folderze js/)
+    // Dzięki temu strona nie zależy od CDN js-dos.com.
+    wdosboxUrl: "js/wdosbox.js",
   })
     .ready(function (fs, main) {
       // Zapisz instancję do późniejszego zatrzymania
@@ -80,7 +72,7 @@ function initializeButtons() {
       const canvas = document.getElementById("dosbox");
       document.getElementById("button-container").style.display = "none";
       document.getElementById("controls-container").style.display = "inline-flex";
-      // Pokaż kontener (usuń visibility: collapse) i uruchom animację
+      // Pokaż kontener (ustaw visibility: visible) i uruchom animację
       emulatorContainer.style.visibility = "visible";
       // Small timeout to allow CSS transition to animate
       setTimeout(() => {
