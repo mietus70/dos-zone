@@ -1,28 +1,56 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="pl">
   <head>
-    <meta charset="UTF-8" >
+    <meta charset="UTF-8" />
     <title>Emulator MS-DOS (JS-DOS 6.22)</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" >
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    />
     <!-- Załadowanie głównego skryptu JS-DOS (lokalna kopia 6.22.60, patrz folder js/)
          defer: nie blokuje renderowania; script.js sprawdza 'Dos' dopiero na DOMContentLoaded -->
     <script src="js/js-dos.js" defer></script>
-    <link rel="stylesheet" href="css/style.css" >
-    <link rel="icon" type="image/svg+xml" href="favicon.svg">
-    <meta name="description" content="DOS Zone — zagraj online w retro gry i programy MS-DOS oraz Amigi w przeglądarce. Emulator JS-DOS 6.22, bez instalacji, działa na komputerze i na telefonie.">
-    <meta name="author" content="DOSzone">
+    <link rel="stylesheet" href="css/style.css" />
+    <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+    <meta
+      name="description"
+      content="DOS Zone — zagraj online w retro gry i programy MS-DOS w przeglądarce. Emulator JS-DOS 6.22, bez instalacji, działa na komputerze i na telefonie."
+    />
+    <meta name="author" content="DOSzone" />
   </head>
   <body>
-    <img src="img/logo.svg" id="logo" alt="DOSzone — retro gry i programy MS-DOS">
+    <img
+      src="img/logo.svg"
+      id="logo"
+      alt="DOSzone — retro gry i programy MS-DOS"
+    />
     <h1>Emulator MS-DOS (JS-DOS 6.22)</h1>
-    <button id="info-btn" type="button" aria-haspopup="dialog" title="Informacje o stronie" aria-label="Informacje o stronie">i</button>
+    <button
+      id="info-btn"
+      type="button"
+      aria-haspopup="dialog"
+      title="Informacje o stronie"
+      aria-label="Informacje o stronie"
+    >
+      i
+    </button>
     <p>Wybierz grę lub program do uruchomienia:</p>
     <div id="button-container">
-      <button type="button" data-zip="exe/ami.zip" data-images="ami1.jpeg">Ami</button>
-      <button type="button" data-zip="exe/pong.zip" data-images="pong1.jpeg,pong2.jpeg">Pong</button>
+      <button type="button" data-zip="exe/ami.zip" data-images="ami1.jpeg">
+        Ami
+      </button>
+      <button
+        type="button"
+        data-zip="exe/pong.zip"
+        data-images="pong1.jpeg,pong2.jpeg"
+      >
+        Pong
+      </button>
     </div>
     <div id="controls-container">
-      <button id="power-btn" type="button"><i class="icon-power-btn"></i></button>
+      <button id="power-btn" type="button">
+        <i class="icon-power-btn"></i>
+      </button>
     </div>
     <div id="emulator-container">
       <div class="monitor-effect">
@@ -40,13 +68,18 @@
 
     <!-- Okienko z opisem strony (otwiera przycisk "i") -->
     <div id="info-overlay" hidden>
-      <div class="info-dialog" role="dialog" aria-modal="true" aria-labelledby="info-title">
+      <div
+        class="info-dialog"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="info-title"
+      >
         <button id="info-close" type="button" aria-label="Zamknij">×</button>
         <h2 id="info-title">O stronie</h2>
         <p>
-          DOS Zone — retro gry i programy MS-DOS oraz Amigi, uruchamiane
-          online w Twojej przeglądarce. Bez instalacji i bez rejestracji:
-          klikasz tytuł i grasz.
+          DOS Zone — retro gry i programy MS-DOS oraz Amigi, uruchamiane online
+          w Twojej przeglądarce. Bez instalacji i bez rejestracji: klikasz tytuł
+          i grasz.
         </p>
         <p>
           Działa na komputerze i na telefonie: na ekranie dotykowym dotyk to
