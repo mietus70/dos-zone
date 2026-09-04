@@ -66,13 +66,66 @@ body {
   width: 640px;
 }
 
-/* Krótki opis strony pod nagłówkiem */
-.site-description {
-  max-width: 640px;
+/* Przycisk "i" i okienko z opisem strony */
+#info-btn {
+  display: block;
   margin: 0 auto 12px;
+  width: 30px;
+  height: 30px;
+  padding: 0;
+  border-radius: 50%;
+  font-size: 16px;
+  font-style: italic;
+  line-height: 1;
+}
+#info-overlay {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  background: rgba(0, 0, 0, 0.75);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  box-sizing: border-box;
+  z-index: 10000;
+}
+#info-overlay[hidden] {
+  display: none;
+}
+.info-dialog {
+  position: relative;
+  max-width: 520px;
+  width: 100%;
+  background: #020;
+  border: 1px solid #0f0;
+  box-shadow: 0 0 10px rgba(0, 255, 0, 0.3);
+  color: #0f0;
+  text-align: left;
+  padding: 18px 20px;
   font-size: 14px;
   line-height: 1.5;
-  color: #0c0;
+}
+.info-dialog h2 {
+  margin: 0 0 10px;
+  font-size: 16px;
+}
+.info-dialog p {
+  margin: 0 0 10px;
+}
+.info-dialog p:last-child {
+  margin-bottom: 0;
+}
+#info-close {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  margin: 0;
+  padding: 2px 10px;
+  font-size: 16px;
+  line-height: 1.2;
 }
 button {
   margin: 5px;

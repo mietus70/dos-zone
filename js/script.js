@@ -427,3 +427,33 @@ document.getElementById("power-btn").addEventListener("click", function() {
 document.addEventListener('DOMContentLoaded', function() {
   initClickSound();
 });
+
+// ===== Okienko z opisem strony (przycisk "i") =====
+// Niezależne od ładowania js-dos — działa, nawet gdy silnik jeszcze nie wszedł.
+function initializeInfoDialog() {
+  const btn = document.getElementById("info-btn");
+  const overlay = document.getElementById("info-overlay");
+  if (!btn || !overlay) return;
+  const closeBtn = overlay.querySelector("#info-close");
+
+  function openDialog() {
+    overlay.hidden = false;
+    closeBtn.focus();
+  }
+  function closeDialog() {
+    overlay.hidden = true;
+    btn.focus();
+  }
+
+  btn.addEventListener("click", openDialog);
+  closeBtn.addEventListener("click", closeDialog);
+  // Klik w ciemne tło (poza samym okienkiem) zamyka
+  overlay.addEventListener("click", function (e) {
+    if (e.target === overlay) closeDialog();
+  });
+  // Escape zamyka
+  document.addEventListener("keydown", function (e) {
+    if (e.key === "Escape" && !overlay.hidden) closeDialog();
+  });
+}
+document.addEventListener("DOMContentLoaded", initializeInfoDialog);
